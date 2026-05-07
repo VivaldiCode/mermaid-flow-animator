@@ -10,7 +10,7 @@ A aplicação roda 100% no navegador. Sem backend, sem banco, sem telemetria.
 
 GIF gerado pela própria aplicação no botão **EXPORT GIF** — diagrama Login Flow com partículas de **success** (verde) seguindo o ramo `Yes → Load Dashboard → End` e partículas de **error** (vermelho) seguindo `No → Show Error → Enter Credentials`:
 
-![Login Flow demo](login-flow-demo.gif)
+![Login Flow demo](./login-flow-demo.gif)
 
 > Este GIF foi exportado direto da UI: `Particles=3`, `FPS=15`, `Type=Alternate`. Sem edição posterior — o que você vê é a animação ao vivo capturada quadro-a-quadro pelo encoder em Web Worker.
 
