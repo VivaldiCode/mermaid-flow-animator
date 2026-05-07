@@ -40,8 +40,12 @@
   transform-origin: center;
 }
 
-.node-badge rect {
-  filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.55));
+.node-badge--error rect {
+  filter: drop-shadow(0 0 6px rgba(248, 113, 113, 0.55));
+}
+
+.node-badge--success rect {
+  filter: drop-shadow(0 0 6px rgba(74, 222, 128, 0.55));
 }
 
 @keyframes badge-pop {

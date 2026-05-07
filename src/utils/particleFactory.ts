@@ -17,11 +17,12 @@ interface CreateParticleOptions {
   kind: ParticleKind;
   flowId: number;
   visitedNodes: string[];
+  decisionsPassed?: number;
 }
 
 export function createParticle(options: CreateParticleOptions): Particle {
   particleIdCounter += 1;
-  const { edge, speedMultiplier, kind, flowId, visitedNodes } = options;
+  const { edge, speedMultiplier, kind, flowId, visitedNodes, decisionsPassed = 0 } = options;
   return {
     id: `p-${Date.now()}-${particleIdCounter}`,
     edgeId: edge.id,
@@ -32,6 +33,7 @@ export function createParticle(options: CreateParticleOptions): Particle {
     kind,
     flowId,
     visitedNodes,
+    decisionsPassed,
     trailPoints: [],
     currentX: edge.points[0]?.x ?? 0,
     currentY: edge.points[0]?.y ?? 0,

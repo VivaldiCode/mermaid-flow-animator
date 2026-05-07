@@ -41,6 +41,7 @@ interface UseParticleAnimationResult {
   setViewMode: (mode: ViewMode) => void;
   setFollowWindow: (window: FollowWindow) => void;
   setErrorLoopLimit: (limit: number) => void;
+  setShowBadges: (show: boolean) => void;
   startFromNode: (nodeId: string) => void;
   registerPathElement: (edgeId: string, el: SVGPathElement | null) => void;
   getActiveParticleCount: () => number;
@@ -61,6 +62,7 @@ export function useParticleAnimation(graph: ParsedGraph | null): UseParticleAnim
     viewMode: 'overview',
     followWindow: 5,
     errorLoopLimit: 3,
+    showBadges: true,
   });
 
   const particlesRef = useRef<Particle[]>([]);
@@ -233,8 +235,12 @@ export function useParticleAnimation(graph: ParsedGraph | null): UseParticleAnim
             let nextKind: ParticleKind = particle.kind;
             const isDecision = outgoing.length > 1;
             const isRevisit = particle.visitedNodes.includes(particle.targetNodeId);
-            if (spawnKindRef.current === 'alternate' && isDecision && isRevisit) {
-              nextKind = particle.kind === 'success' ? 'error' : 'success';
+            if (spawnKindRef.current === 'alternate' && isDecision) {
+              if (isRevisit) {
+                nextKind = particle.kind === 'success' ? 'error' : 'success';
+              } else if (particle.decisionsPassed >= 1) {
+                nextKind = Math.random() < 0.5 ? 'success' : 'error';
+              }
             }
 
             const chosen = pickEdgeForKind(outgoing, nextKind);
@@ -252,6 +258,7 @@ export function useParticleAnimation(graph: ParsedGraph | null): UseParticleAnim
                     kind: nextKind,
                     flowId: particle.flowId,
                     visitedNodes: [...particle.visitedNodes, particle.targetNodeId],
+                    decisionsPassed: particle.decisionsPassed + (isDecision ? 1 : 0),
                   }),
                 );
               } else {
@@ -382,6 +389,10 @@ export function useParticleAnimation(graph: ParsedGraph | null): UseParticleAnim
       setAnimState((s) => ({ ...s, errorLoopLimit: Math.max(1, Math.floor(limit)) })),
     [],
   );
+  const setShowBadges = useCallback(
+    (show: boolean) => setAnimState((s) => ({ ...s, showBadges: show })),
+    [],
+  );
 
   const getActiveParticleCount = useCallback(
     () => particlesRef.current.filter((p) => !p.completed).length,
@@ -439,6 +450,7 @@ export function useParticleAnimation(graph: ParsedGraph | null): UseParticleAnim
     setViewMode,
     setFollowWindow,
     setErrorLoopLimit,
+    setShowBadges,
     startFromNode,
     registerPathElement,
     getActiveParticleCount,

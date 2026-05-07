@@ -71,6 +71,7 @@ export interface Particle {
   kind: ParticleKind;
   flowId: number;
   visitedNodes: string[];
+  decisionsPassed: number;
   trailPoints: ParticleTrailPoint[];
   currentX: number;
   currentY: number;
@@ -92,4 +93,5 @@ export interface AnimationState {
   viewMode: ViewMode;
   followWindow: FollowWindow;
   errorLoopLimit: number;
+  showBadges: boolean;
 }

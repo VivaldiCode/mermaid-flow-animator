@@ -15,6 +15,7 @@ interface AnimationControlsProps {
   onViewModeChange: (mode: ViewMode) => void;
   onFollowWindowChange: (window: FollowWindow) => void;
   onErrorLoopLimitChange: (limit: number) => void;
+  onShowBadgesChange: (show: boolean) => void;
 }
 
 const SPEEDS = [0.5, 1, 2, 3];
@@ -39,6 +40,7 @@ export const AnimationControls: React.FC<AnimationControlsProps> = ({
   onViewModeChange,
   onFollowWindowChange,
   onErrorLoopLimitChange,
+  onShowBadgesChange,
 }) => {
   return (
     <div className="animation-controls">
@@ -110,6 +112,27 @@ export const AnimationControls: React.FC<AnimationControlsProps> = ({
             Max times an error particle can revisit the same node before stopping.
           </span>
         </div>
+      </div>
+
+      <div className="control-section">
+        <span className="section-label">TERMINAL BADGES</span>
+        <div className="control-row">
+          <button
+            className={`btn-control ${animState.showBadges ? 'active' : ''}`}
+            onClick={() => onShowBadgesChange(true)}
+          >
+            Show
+          </button>
+          <button
+            className={`btn-control ${!animState.showBadges ? 'active' : ''}`}
+            onClick={() => onShowBadgesChange(false)}
+          >
+            Hide
+          </button>
+        </div>
+        <span className="sub-label">
+          Toggle the success/error counters on top of nodes.
+        </span>
       </div>
 
       <div className="control-section">

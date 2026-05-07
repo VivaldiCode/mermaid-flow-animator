@@ -88,39 +88,36 @@ function renderShape(node: GraphNode, isActive: boolean): React.ReactNode {
   }
 }
 
-interface NotificationBadgeProps {
-  arrivals: NodeArrivalCounts;
+const BADGE_HEIGHT = 22;
+const BADGE_GAP = 4;
+
+function badgeWidth(count: number): number {
+  const label = count > 99 ? '99+' : String(count);
+  return Math.max(BADGE_HEIGHT, label.length * 8 + 12);
+}
+
+interface BadgePillProps {
+  count: number;
+  kind: 'success' | 'error';
   cx: number;
   cy: number;
 }
 
-const NotificationBadge: React.FC<NotificationBadgeProps> = ({ arrivals, cx, cy }) => {
-  const count = arrivals.total;
-  if (count <= 0) return null;
-
+const BadgePill: React.FC<BadgePillProps> = ({ count, kind, cx, cy }) => {
   const label = count > 99 ? '99+' : String(count);
-  const charCount = label.length;
-  const height = 22;
-  const width = Math.max(height, charCount * 8 + 12);
-
-  const onlySuccess = arrivals.error === 0;
-  const onlyError = arrivals.success === 0;
-  const fill = onlyError
-    ? PARTICLE_COLORS.error
-    : onlySuccess
-      ? PARTICLE_COLORS.success
-      : '#ef4444';
+  const width = badgeWidth(count);
+  const fill = kind === 'success' ? PARTICLE_COLORS.success : PARTICLE_COLORS.error;
 
   return (
     <g transform={`translate(${cx}, ${cy})`} style={{ pointerEvents: 'none' }}>
-      <g key={count} className="node-badge">
+      <g key={count} className={`node-badge node-badge--${kind}`}>
         <rect
           x={-width / 2}
-          y={-height / 2}
+          y={-BADGE_HEIGHT / 2}
           width={width}
-          height={height}
-          rx={height / 2}
-          ry={height / 2}
+          height={BADGE_HEIGHT}
+          rx={BADGE_HEIGHT / 2}
+          ry={BADGE_HEIGHT / 2}
           fill={fill}
           stroke="#0a0e1a"
           strokeWidth={2.5}
@@ -140,6 +137,37 @@ const NotificationBadge: React.FC<NotificationBadgeProps> = ({ arrivals, cx, cy 
         </text>
       </g>
     </g>
+  );
+};
+
+interface NotificationBadgeProps {
+  arrivals: NodeArrivalCounts;
+  cx: number;
+  cy: number;
+}
+
+const NotificationBadge: React.FC<NotificationBadgeProps> = ({ arrivals, cx, cy }) => {
+  const showSuccess = arrivals.success > 0;
+  const showError = arrivals.error > 0;
+  if (!showSuccess && !showError) return null;
+
+  if (showSuccess && !showError) {
+    return <BadgePill count={arrivals.success} kind="success" cx={cx} cy={cy} />;
+  }
+  if (showError && !showSuccess) {
+    return <BadgePill count={arrivals.error} kind="error" cx={cx} cy={cy} />;
+  }
+
+  const successW = badgeWidth(arrivals.success);
+  const errorW = badgeWidth(arrivals.error);
+  const errorCx = cx;
+  const successCx = cx - errorW / 2 - BADGE_GAP - successW / 2;
+
+  return (
+    <>
+      <BadgePill count={arrivals.success} kind="success" cx={successCx} cy={cy} />
+      <BadgePill count={arrivals.error} kind="error" cx={errorCx} cy={cy} />
+    </>
   );
 };
 

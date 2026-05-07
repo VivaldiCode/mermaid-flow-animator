@@ -25,6 +25,7 @@ interface FlowCanvasProps {
   nodeArrivals: Record<string, NodeArrivalCounts>;
   viewMode: ViewMode;
   followWindow: FollowWindow;
+  showBadges: boolean;
   onSvgRef?: (el: SVGSVGElement | null) => void;
 }
 
@@ -146,6 +147,7 @@ export const FlowCanvas: React.FC<FlowCanvasProps> = ({
   nodeArrivals,
   viewMode,
   followWindow,
+  showBadges,
   onSvgRef,
 }) => {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -517,7 +519,7 @@ export const FlowCanvas: React.FC<FlowCanvasProps> = ({
               node={node}
               onClick={() => onNodeClick(node.id)}
               isActive={activeNodeIds.has(node.id)}
-              arrivals={nodeArrivals[node.id]}
+              arrivals={showBadges ? nodeArrivals[node.id] : undefined}
             />
           ))}
         </g>

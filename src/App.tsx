@@ -36,6 +36,7 @@ const App: React.FC = () => {
     setViewMode,
     setFollowWindow,
     setErrorLoopLimit,
+    setShowBadges,
     startFromNode,
     registerPathElement,
     getActiveParticleCount,
@@ -115,6 +116,7 @@ const App: React.FC = () => {
             onViewModeChange={setViewMode}
             onFollowWindowChange={setFollowWindow}
             onErrorLoopLimitChange={setErrorLoopLimit}
+            onShowBadgesChange={setShowBadges}
           />
           <RecordPanel
             state={recorder.state}
@@ -138,6 +140,7 @@ const App: React.FC = () => {
               nodeArrivals={nodeArrivals}
               viewMode={animState.viewMode}
               followWindow={animState.followWindow}
+              showBadges={animState.showBadges}
               onSvgRef={handleSvgRef}
             />
           ) : (
