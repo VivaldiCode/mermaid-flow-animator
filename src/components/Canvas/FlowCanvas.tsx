@@ -25,6 +25,7 @@ interface FlowCanvasProps {
   nodeArrivals: Record<string, NodeArrivalCounts>;
   viewMode: ViewMode;
   followWindow: FollowWindow;
+  onSvgRef?: (el: SVGSVGElement | null) => void;
 }
 
 interface ViewBox {
@@ -145,6 +146,7 @@ export const FlowCanvas: React.FC<FlowCanvasProps> = ({
   nodeArrivals,
   viewMode,
   followWindow,
+  onSvgRef,
 }) => {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -171,6 +173,11 @@ export const FlowCanvas: React.FC<FlowCanvasProps> = ({
     observer.observe(wrapper);
     return () => observer.disconnect();
   }, []);
+
+  useLayoutEffect(() => {
+    onSvgRef?.(svgRef.current);
+    return () => onSvgRef?.(null);
+  }, [onSvgRef]);
 
   useEffect(() => {
     if (wrapperSize.w <= 0 || wrapperSize.h <= 0) return;

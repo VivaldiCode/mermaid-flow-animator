@@ -43,6 +43,8 @@ interface UseParticleAnimationResult {
   setErrorLoopLimit: (limit: number) => void;
   startFromNode: (nodeId: string) => void;
   registerPathElement: (edgeId: string, el: SVGPathElement | null) => void;
+  getActiveParticleCount: () => number;
+  spawnFromStartNodes: (kind: ParticleKind) => void;
 }
 
 export function useParticleAnimation(graph: ParsedGraph | null): UseParticleAnimationResult {
@@ -381,6 +383,45 @@ export function useParticleAnimation(graph: ParsedGraph | null): UseParticleAnim
     [],
   );
 
+  const getActiveParticleCount = useCallback(
+    () => particlesRef.current.filter((p) => !p.completed).length,
+    [],
+  );
+
+  const spawnFromStartNodes = useCallback(
+    (kind: ParticleKind) => {
+      const currentGraph = graphRef.current;
+      if (!currentGraph) return;
+      const incoming = new Set(currentGraph.edges.map((e) => e.target));
+      const startNodes = currentGraph.nodes.filter((n) => !incoming.has(n.id));
+      if (startNodes.length === 0) return;
+
+      const newParticles: Particle[] = [];
+      for (const node of startNodes) {
+        const outgoing = currentGraph.edges.filter((e) => e.source === node.id);
+        if (outgoing.length === 0) continue;
+        const chosen = pickEdgeForKind(outgoing, kind);
+        if (!chosen) continue;
+        newParticles.push(
+          createParticle({
+            edge: chosen,
+            speedMultiplier: speedRef.current,
+            kind,
+            flowId: createFlowId(),
+            visitedNodes: [chosen.source],
+          }),
+        );
+      }
+
+      if (newParticles.length === 0) return;
+      let merged = [...particlesRef.current, ...newParticles];
+      if (merged.length > MAX_PARTICLES) merged = merged.slice(-MAX_PARTICLES);
+      particlesRef.current = merged;
+      setParticles(merged);
+    },
+    [],
+  );
+
   return {
     particles,
     animState,
@@ -400,5 +441,7 @@ export function useParticleAnimation(graph: ParsedGraph | null): UseParticleAnim
     setErrorLoopLimit,
     startFromNode,
     registerPathElement,
+    getActiveParticleCount,
+    spawnFromStartNodes,
   };
 }

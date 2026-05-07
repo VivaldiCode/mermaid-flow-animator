@@ -1,0 +1,79 @@
+.record-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.record-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.record-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: #475569;
+}
+
+.record-btn {
+  margin-top: 2px;
+}
+
+.record-hint {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.record-hint code {
+  background: rgba(96, 165, 250, 0.1);
+  color: var(--accent-blue);
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.record-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.record-status {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent-amber);
+}
+
+.record-status--done {
+  color: var(--accent-green);
+}
+
+.record-status--error {
+  color: var(--accent-red);
+}
+
+.record-meta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar__fill {
+  height: 100%;
+  background: var(--accent-amber);
+  transition: width 0.15s linear;
+}

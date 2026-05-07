@@ -1,8 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlowCanvas } from './components/Canvas/FlowCanvas';
 import { AnimationControls } from './components/Controls/AnimationControls';
+import { RecordPanel } from './components/Controls/RecordPanel';
 import { EXAMPLE_DIAGRAMS, MermaidEditor } from './components/Editor/MermaidEditor';
 import { FlowLegend } from './components/Legend/FlowLegend';
+import { useGifRecorder } from './hooks/useGifRecorder';
 import { useGraphLayout } from './hooks/useGraphLayout';
 import { useMermaidParser } from './hooks/useMermaidParser';
 import { useParticleAnimation } from './hooks/useParticleAnimation';
@@ -36,7 +38,26 @@ const App: React.FC = () => {
     setErrorLoopLimit,
     startFromNode,
     registerPathElement,
+    getActiveParticleCount,
+    spawnFromStartNodes,
   } = useParticleAnimation(layoutGraph);
+
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const handleSvgRef = useCallback((el: SVGSVGElement | null) => {
+    svgRef.current = el;
+  }, []);
+
+  const recorderDeps = useMemo(
+    () => ({
+      getSvg: () => svgRef.current,
+      resetParticles: reset,
+      spawnFromStartNodes,
+      getActiveParticleCount,
+    }),
+    [reset, spawnFromStartNodes, getActiveParticleCount],
+  );
+
+  const recorder = useGifRecorder(recorderDeps);
 
   const handleRender = useCallback(() => {
     setRenderedSource(source);
@@ -95,6 +116,12 @@ const App: React.FC = () => {
             onFollowWindowChange={setFollowWindow}
             onErrorLoopLimitChange={setErrorLoopLimit}
           />
+          <RecordPanel
+            state={recorder.state}
+            onStart={recorder.start}
+            onCancel={recorder.cancel}
+            onReset={recorder.reset}
+          />
           <FlowLegend />
         </aside>
 
@@ -111,6 +138,7 @@ const App: React.FC = () => {
               nodeArrivals={nodeArrivals}
               viewMode={animState.viewMode}
               followWindow={animState.followWindow}
+              onSvgRef={handleSvgRef}
             />
           ) : (
             <div className="empty-state">
