@@ -4,6 +4,10 @@ Um visualizador interativo que transforma diagramas escritos em sintaxe **Mermai
 
 A aplicação roda 100% no navegador. Sem backend, sem banco, sem telemetria.
 
+### 🔗 [Testar online: mermaid-flow-animator.pages.dev](https://mermaid-flow-animator.pages.dev/)
+
+Sem instalar nada — cole seu diagrama Mermaid, clique em **Parse & Render** e brinque com as partículas. Funciona em qualquer browser moderno (Chrome, Firefox, Safari, Edge).
+
 ---
 
 ## Demo
@@ -12,7 +16,7 @@ GIF gerado pela própria aplicação no botão **EXPORT GIF** — diagrama Login
 
 ![Login Flow demo](./mermaid-flow.gif)
 
-> Este GIF foi exportado direto da UI: `Particles=3`, `FPS=15`, `Type=Alternate`. Sem edição posterior — o que você vê é a animação ao vivo capturada quadro-a-quadro pelo encoder em Web Worker.
+> Este GIF foi exportado direto da UI: `Particles=3`, `FPS=15`, `Type=Alternate`. Sem edição posterior — o que você vê é a animação ao vivo capturada quadro-a-quadro pelo encoder em Web Worker. **Reproduza você mesmo em [mermaid-flow-animator.pages.dev](https://mermaid-flow-animator.pages.dev/).**
 
 ---
 
@@ -258,6 +262,8 @@ Estrutura em **dois `<g>` aninhados**: o externo faz `translate(cx, cy)` (fixo),
 ---
 
 ## Deploy no Cloudflare Pages
+
+A versão pública roda em **[mermaid-flow-animator.pages.dev](https://mermaid-flow-animator.pages.dev/)**, hospedada gratuitamente no Cloudflare Pages com deploy contínuo a partir de `main`. Cada push gera um novo build em ~30 segundos.
 
 A aplicação inclui um [`wrangler.toml`](wrangler.toml) na raiz do projeto. O Cloudflare Pages detecta esse arquivo automaticamente e usa a configuração nele.
 
