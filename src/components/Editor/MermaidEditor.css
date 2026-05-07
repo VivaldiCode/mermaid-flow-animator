@@ -1,0 +1,102 @@
+.mermaid-editor-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.editor-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+}
+
+.example-select {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.example-select:hover {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+.example-select option {
+  background: var(--bg-panel);
+  color: var(--text-primary);
+}
+
+.mermaid-editor {
+  flex: 1;
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  background: var(--bg-panel);
+  color: #cbd5e1;
+  border: none;
+  caret-color: var(--accent-blue);
+  resize: none;
+  outline: none;
+  padding: 14px;
+  min-height: 200px;
+  tab-size: 2;
+}
+
+.mermaid-editor::placeholder {
+  color: #475569;
+}
+
+.editor-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+}
+
+.shortcut-hint {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.btn-control--primary {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+.btn-control--primary:hover {
+  background: var(--accent-blue);
+  color: var(--bg-primary);
+}
+
+.parse-error {
+  margin: 0 14px 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--accent-red);
+  border-left-width: 3px;
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--accent-red);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 4px;
+}

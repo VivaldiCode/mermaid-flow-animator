@@ -1,0 +1,152 @@
+.flow-canvas-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-primary);
+  background-image: radial-gradient(circle, #1e293b 1px, transparent 1px);
+  background-size: 24px 24px;
+  user-select: none;
+}
+
+.flow-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  shape-rendering: geometricPrecision;
+  text-rendering: geometricPrecision;
+}
+
+.node {
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+
+.node:hover rect,
+.node:hover polygon,
+.node:hover ellipse {
+  filter: drop-shadow(0 0 10px rgba(96, 165, 250, 0.5));
+}
+
+.node--active rect,
+.node--active polygon,
+.node--active ellipse {
+  filter: drop-shadow(0 0 12px rgba(96, 165, 250, 0.55));
+}
+
+.node-badge {
+  animation: badge-pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.node-badge rect {
+  filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.55));
+}
+
+@keyframes badge-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  60% {
+    transform: scale(1.18);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.canvas-overlay {
+  position: absolute;
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+}
+
+.canvas-overlay--top-left {
+  top: 16px;
+  left: 16px;
+  flex-direction: column;
+}
+
+.canvas-overlay--bottom-right {
+  bottom: 16px;
+  right: 16px;
+}
+
+.canvas-overlay--bottom-left {
+  bottom: 16px;
+  left: 16px;
+}
+
+.stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  backdrop-filter: blur(8px);
+}
+
+.stat-pill__label {
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+}
+
+.stat-pill__value {
+  color: var(--accent-blue);
+  font-weight: 500;
+  min-width: 20px;
+  text-align: right;
+}
+
+.stat-pill--follow .stat-pill__label,
+.stat-pill--follow .stat-pill__value {
+  color: var(--accent-amber);
+}
+
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  transition: all 0.15s;
+}
+
+.btn-icon:hover:not(:disabled) {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+  background: rgba(96, 165, 250, 0.08);
+}
+
+.btn-icon:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.hint-text {
+  padding: 6px 12px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.03em;
+  backdrop-filter: blur(8px);
+}
