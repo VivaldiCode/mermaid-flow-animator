@@ -282,26 +282,53 @@ npm run preview
 
 ## Sintaxe Mermaid Suportada
 
+**Direção do grafo:**
+
+```text
+flowchart TD    %% Top-Down (também: TB)
+flowchart BT    %% Bottom-Top
+flowchart LR    %% Left-Right
+flowchart RL    %% Right-Left
+```
+
+**Formas de nó:**
+
+```text
+A[Retângulo]
+B(Estádio)
+C([Estádio com colchete])
+D{Diamante / decisão}
+E((Círculo))
+F[[Sub-rotina]]
+```
+
+**Tipos de aresta:**
+
+```text
+A --> B                  // padrão
+A -->|Label| B           // com pipe-label
+A -- text --> B          // com text-label
+A --> B --> C            // encadeada
+```
+
+**Definição inline na aresta** (o nó é registrado no momento que aparece):
+
+```text
+X[Start] --> Y{Valid?} -->|Yes| Z[Done]
+```
+
+**Comentários** começam com `%%` em uma linha própria.
+
+**Exemplo completo renderizável:**
+
 ```mermaid
 flowchart TD
-  %% direção: TD, TB, BT, LR, RL
-
-  %% Formas de nó
-  A[Retângulo]
-  B(Estádio)
-  C([Estádio com colchete])
-  D{Diamante / decisão}
-  E((Círculo))
-  F[[Sub-rotina]]
-
-  %% Arestas
-  A --> B                      %% padrão
-  A -->|Label| B               %% com pipe-label
-  A -- text --> B              %% com text-label
-  A --> B --> C                %% encadeada
-
-  %% Inline (define o nó na mesma linha)
-  X[Start] --> Y{Valid?} -->|Yes| Z[Done]
+    A([Start]) --> B[Enter Credentials]
+    B --> C{Valid?}
+    C -->|Yes| D[Load Dashboard]
+    C -->|No| E[Show Error]
+    E --> B
+    D --> F([End])
 ```
 
 **Não suportado** (ainda): subgraphs, classes/styles, links externos, gráficos não-flowchart (sequence, gantt, pie, etc.).
