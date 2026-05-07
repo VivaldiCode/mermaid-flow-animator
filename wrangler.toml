@@ -1,0 +1,43 @@
+#:schema node_modules/wrangler/config-schema.json
+
+# ─────────────────────────────────────────────────────────────────────
+# Cloudflare Pages — wrangler configuration
+# Docs: https://developers.cloudflare.com/pages/functions/wrangler-configuration/
+# ─────────────────────────────────────────────────────────────────────
+
+# Nome do projeto no Cloudflare Pages (deve bater com o slug do dashboard).
+# A URL pública é https://<name>.pages.dev
+name = "mermaid-flow-animator"
+
+# Data fixa para travar o runtime do Workers/Pages.
+# Cloudflare usa essa data para decidir quais APIs/comportamentos ativar,
+# garantindo que builds futuros não quebrem com mudanças não-retrocompatíveis.
+# Atualize periodicamente para puxar bugfixes mais recentes.
+compatibility_date = "2026-04-01"
+
+# Diretório onde o `npm run build` deposita os assets estáticos.
+# Vite emite em ./dist por padrão. Se mudar a saída do build, atualize aqui.
+pages_build_output_dir = "./dist"
+
+# ─────────────────────────────────────────────────────────────────────
+# (Opcional) Flags de compatibilidade — só ative se precisar.
+# Lista completa: https://developers.cloudflare.com/workers/configuration/compatibility-flags/
+# ─────────────────────────────────────────────────────────────────────
+# compatibility_flags = ["nodejs_compat"]
+
+# ─────────────────────────────────────────────────────────────────────
+# (Opcional) Variáveis de ambiente para o build / runtime.
+# Não inclua secrets aqui — use `wrangler pages secret put` ou o dashboard.
+# ─────────────────────────────────────────────────────────────────────
+# [vars]
+# PUBLIC_API_URL = "https://api.example.com"
+
+# ─────────────────────────────────────────────────────────────────────
+# (Opcional) Configuração por ambiente (preview vs produção).
+# Cada PR vira um deploy "preview"; main → "production".
+# ─────────────────────────────────────────────────────────────────────
+# [env.production]
+# vars = { ENVIRONMENT = "production" }
+
+# [env.preview]
+# vars = { ENVIRONMENT = "preview" }

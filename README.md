@@ -32,6 +32,7 @@ GIF gerado pela própria aplicação no botão **EXPORT GIF** — diagrama Login
   - [6. Detecção de Loops e Limite Configurável](#6-detecção-de-loops-e-limite-configurável)
   - [7. Modos de Visualização (Overview / Follow)](#7-modos-de-visualização-overview--follow)
   - [8. Badges de Notificação iOS-style](#8-badges-de-notificação-ios-style)
+- [Deploy no Cloudflare Pages](#deploy-no-cloudflare-pages)
 - [Setup e Desenvolvimento](#setup-e-desenvolvimento)
 - [Sintaxe Mermaid Suportada](#sintaxe-mermaid-suportada)
 - [Como Contribuir](#como-contribuir)
@@ -253,6 +254,40 @@ A partícula seguida ganha um anel de destaque + glow maior via filtro SVG `foll
 - Posicionamento adaptado por shape (canto-direito para retângulos, vértice direito para diamantes, arco a 45° para círculos).
 
 Estrutura em **dois `<g>` aninhados**: o externo faz `translate(cx, cy)` (fixo), o interno tem a animação CSS de `scale + opacity` — para que o badge não "voe" da origem do nó até a posição final durante o pop.
+
+---
+
+## Deploy no Cloudflare Pages
+
+A aplicação inclui um [`wrangler.toml`](wrangler.toml) na raiz do projeto. O Cloudflare Pages detecta esse arquivo automaticamente e usa a configuração nele.
+
+### Configuração no Dashboard
+
+Ao conectar o repositório no Cloudflare Pages, certifique-se de que:
+
+| Campo | Valor |
+|---|---|
+| **Framework preset** | None (ou `Vite`) |
+| **Build command** | `npm run build` |
+| **Build output directory** | `dist` |
+| **Root directory** | _(vazio — usa a raiz do repo)_ |
+| **Node version** | `18` ou superior (default `22.x` funciona) |
+
+O `wrangler.toml` reforça o `Build output directory` via `pages_build_output_dir = "./dist"` — se houver divergência entre dashboard e arquivo, o arquivo prevalece.
+
+### Arquivos auxiliares no `public/`
+
+- [`public/_redirects`](public/_redirects) — fallback SPA `/* → /index.html 200`. Se você adicionar client-side routing no futuro (router por hash ou pathname), refresh em qualquer rota continua funcionando em vez de retornar 404.
+- [`public/_headers`](public/_headers) — `Cache-Control: immutable` para assets com hash do Vite (max-age 1 ano) + headers de segurança (`X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`).
+
+Vite copia tudo de `public/` para `dist/` no build, então esses arquivos são automaticamente servidos pelo Cloudflare.
+
+### Troubleshooting
+
+- **HTTP 500 em todas as rotas, inclusive paths inexistentes** → o sistema de serving do Cloudflare está num estado inconsistente. Vá no painel do projeto → Deployments → "Retry deployment" no último deploy. Se persistir, delete e recrie o projeto no Cloudflare apontando para o mesmo repositório.
+- **404 ao dar refresh em qualquer rota** → confira se o `public/_redirects` foi copiado para `dist/` (deve aparecer no log de build do Cloudflare como arquivo enviado).
+- **Build falha por `Cannot find module 'gif.js'`** → garanta que `npm install` rode antes do build. O Cloudflare faz isso automaticamente via `npm clean-install`, mas se você tem um `package-lock.json` desatualizado, regere com `npm install`.
+- **Assets carregam mas a app fica branca** → abra o DevTools, aba Console. Provavelmente um erro de JavaScript específico. O bundle vai versionado (hash no nome do arquivo), então cache antigo do browser não causa esse problema.
 
 ---
 
