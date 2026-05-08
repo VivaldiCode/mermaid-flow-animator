@@ -41,6 +41,7 @@ GIF gerado pela própria aplicação no botão **EXPORT GIF** — diagrama Login
 - [Deploy no Cloudflare Pages](#deploy-no-cloudflare-pages)
 - [Plugin Obsidian](#plugin-obsidian)
 - [CLI (`.mmd` → `.gif` / `.mp4`)](#cli-mmd--gif--mp4)
+- [Skill para Claude / Claude Code](#skill-para-claude--claude-code)
 - [Setup e Desenvolvimento](#setup-e-desenvolvimento)
 - [Sintaxe Mermaid Suportada](#sintaxe-mermaid-suportada)
 - [Como Contribuir](#como-contribuir)
@@ -351,6 +352,45 @@ npm run build
 Reaproveita 100% da lógica de renderização do web app (parser, layout dagre, engine de partículas, estilo de cano). Configurável via flags para tipo, velocidade, duração, FPS, dimensões, scale, exibição de badges e mais. Encoding de GIF em 2 passes com `palettegen` para cores nítidas; `libx264 + yuv420p + faststart` para MP4 compatível com qualquer player.
 
 Documentação completa, exemplos e troubleshooting em [cli/README.md](cli/README.md).
+
+Um wrapper em [`bin/mermaid-flow`](bin/mermaid-flow) resolve a CLI de qualquer diretório — symlink uma vez no `$PATH`:
+
+```bash
+ln -s "$(pwd -P)/bin/mermaid-flow" /usr/local/bin/mermaid-flow
+
+# Agora de qualquer pasta:
+mermaid-flow fluxo.mmd -o saida.gif
+```
+
+---
+
+## Skill para Claude / Claude Code
+
+Uma skill pronta vive em [`.claude/skills/mermaid-flow/`](.claude/skills/mermaid-flow/). Depois de instalada, o Claude (Sonnet/Opus no Claude Code) detecta automaticamente quando o usuário quer renderizar um flowchart Mermaid como GIF ou MP4 animado e dispara a CLI com os flags certos — escolhendo formato, definindo defaults sensatos por contexto (README vs slide vs social) e validando o output.
+
+### Instalação para uso global
+
+```bash
+# Symlink da skill no config do Claude do usuário
+mkdir -p ~/.claude/skills
+ln -s "$(pwd -P)/.claude/skills/mermaid-flow" ~/.claude/skills/mermaid-flow
+
+# Garante que o wrapper da CLI esteja no PATH (ou configure MERMAID_FLOW_DIR)
+ln -s "$(pwd -P)/bin/mermaid-flow" /usr/local/bin/mermaid-flow
+```
+
+A partir daí, em qualquer sessão do Claude Code você pode dizer coisas como *"renderiza esse fluxo como MP4 pro meu slide"* ou *"gera um GIF deste .mmd"* e o Claude roda a CLI com os flags apropriados. A descrição da skill é estruturada pra ela só disparar em intenção de animação de flowchart, não em renderização estática nem em outros tipos de diagrama Mermaid.
+
+### O que a skill faz
+
+- Valida que o input é um `flowchart` (rejeita sequence/gantt/pie)
+- Escolhe entre GIF e MP4 com base em heurísticas de uso (slides → MP4, README → GIF)
+- Resolve o binário entre `$PATH`, `MERMAID_FLOW_DIR` ou pergunta ao usuário
+- Aplica decision tree para `--duration`, `--fps`, `--width/--height`, `--type`
+- Verifica o output via `file <path>` depois da execução
+- Traduz erros comuns (Playwright não instalado, `dist/` não buildado) em mensagens acionáveis
+
+A spec completa da skill está em [`.claude/skills/mermaid-flow/SKILL.md`](.claude/skills/mermaid-flow/SKILL.md).
 
 ---
 

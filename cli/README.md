@@ -41,12 +41,18 @@ npx playwright install chromium   # ~92 MB Chromium download
 npm run build
 ```
 
-After this, the CLI binary is at `cli/dist/index.js`. Symlink it into your `$PATH` if you want a short command:
+After this, the CLI binary is at `cli/dist/index.js`. The repo also ships a `bin/mermaid-flow` wrapper that resolves the entry point through any symlink, so you can put it on `$PATH` and call it from anywhere:
 
 ```bash
-ln -s "$(pwd)/cli/dist/index.js" /usr/local/bin/mermaid-flow
-chmod +x cli/dist/index.js
+ln -s "$(pwd -P)/../bin/mermaid-flow" /usr/local/bin/mermaid-flow
+
+# Now from anywhere:
+mermaid-flow examples/login-flow.mmd -o demo.gif
 ```
+
+### Claude / Claude Code skill
+
+A ready-made skill lives at [`.claude/skills/mermaid-flow/`](../.claude/skills/mermaid-flow/) — install it once and Claude can drive this CLI for you with sensible defaults per use case (README, slides, social, etc.). See the [main README](../README.md#claude--claude-code-skill) for install steps.
 
 ---
 

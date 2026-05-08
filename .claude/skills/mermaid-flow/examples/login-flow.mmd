@@ -1,0 +1,7 @@
+flowchart TD
+    A([Start]) --> B[Enter Credentials]
+    B --> C{Valid?}
+    C -->|Yes| D[Load Dashboard]
+    C -->|No| E[Show Error]
+    E --> B
+    D --> F([End])

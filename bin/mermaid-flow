@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+#
+# bin/mermaid-flow
+#
+# Thin wrapper that resolves the CLI's actual path so the binary works the same
+# whether you invoke it from this folder, a clone, or via a $PATH symlink:
+#
+#   ln -s "$(pwd -P)/bin/mermaid-flow" /usr/local/bin/mermaid-flow
+#
+# After symlinking, you can call `mermaid-flow <args>` from anywhere.
+
+set -euo pipefail
+
+# Resolve the real location of this script (follow symlinks).
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do
+  DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+SCRIPT_DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+PROJECT_ROOT="$(cd -P "$SCRIPT_DIR/.." && pwd)"
+
+CLI_ENTRY="$PROJECT_ROOT/cli/dist/index.js"
+
+if [ ! -f "$CLI_ENTRY" ]; then
+  cat >&2 <<EOF
+✕ CLI not built at: $CLI_ENTRY
+
+Run the setup steps once:
+
+  cd "$PROJECT_ROOT"
+  npm install && npm run build
+  cd cli && npm install && npx playwright install chromium && npm run build
+EOF
+  exit 1
+fi
+
+exec node "$CLI_ENTRY" "$@"
