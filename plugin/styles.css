@@ -47,7 +47,7 @@
 .mermaid-flow-controls {
   position: absolute;
   top: 8px;
-  right: 8px;
+  left: 8px;
   display: flex;
   gap: 6px;
   z-index: 5;
