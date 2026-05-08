@@ -160,12 +160,12 @@ Sem React, sem virtual DOM. ~103 KB minificado (dagre é ~80 KB).
 
 Para o mantenedor — caminho oficial de aprovação:
 
-1. **Crie um repositório dedicado no GitHub** (ex: `obsidian-mermaid-flow-animator`)
-2. **Mova/extraia** o conteúdo desta pasta `plugin/` para a raiz desse repo
+1. **Crie um repositório dedicado no GitHub** — esse plugin vive em [VivaldiCode/mermaid-flow-animator-obsidian](https://github.com/VivaldiCode/mermaid-flow-animator-obsidian).
+2. **Extraia** a pasta `plugin/` para a raiz desse repo via git subtree:
    ```bash
-   # A partir do mermaid-Visualizer original
+   # A partir do mermaid-Visualizer (web app)
    git subtree split --prefix plugin -b plugin-only
-   git push <novo-repo> plugin-only:main
+   git push https://github.com/VivaldiCode/mermaid-flow-animator-obsidian.git plugin-only:main
    ```
 3. **Faça push da primeira release** com tag `0.1.0` — a action automática vai gerar os assets:
    ```bash
@@ -180,7 +180,7 @@ Para o mantenedor — caminho oficial de aprovação:
      "name": "MermaidFlow Animator",
      "author": "VivaldiCode",
      "description": "Render Mermaid flowcharts as live, animated diagrams — particles flow through pipe-styled edges to visualize success/error paths.",
-     "repo": "VivaldiCode/obsidian-mermaid-flow-animator"
+     "repo": "VivaldiCode/mermaid-flow-animator-obsidian"
    }
    ```
 6. **Aguarde a review** dos mantenedores oficiais (geralmente 1-4 semanas). Eles vão checar:

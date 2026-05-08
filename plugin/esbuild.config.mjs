@@ -4,7 +4,7 @@ const isProd = process.argv[2] === 'production';
 
 const banner =
   '/* MermaidFlow Animator — Obsidian plugin\n' +
-  ' * https://github.com/VivaldiCode/mermaid-flow-animator\n' +
+  ' * https://github.com/VivaldiCode/mermaid-flow-animator-obsidian\n' +
   ' */';
 
 const ctx = await esbuild.context({
