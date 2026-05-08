@@ -10,7 +10,10 @@
     "typecheck": "tsc --noEmit",
     "build:plugin": "cd plugin && node esbuild.config.mjs production",
     "dev:plugin": "cd plugin && node esbuild.config.mjs",
-    "typecheck:plugin": "cd plugin && tsc --noEmit"
+    "typecheck:plugin": "cd plugin && tsc --noEmit",
+    "build:cli": "cd cli && npm run build",
+    "typecheck:cli": "cd cli && npm run typecheck",
+    "cli": "cd cli && node dist/index.js"
   },
   "dependencies": {
     "dagre": "^0.8.5",

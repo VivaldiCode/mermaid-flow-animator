@@ -1,0 +1,27 @@
+{
+  "name": "@mermaid-flow/cli",
+  "version": "0.1.0",
+  "description": "Render Mermaid flowcharts as animated GIF or MP4 from the command line.",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "mermaid-flow": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "typecheck": "tsc --noEmit",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "commander": "^12.1.0",
+    "express": "^4.21.2",
+    "ffmpeg-static": "^5.2.0",
+    "playwright": "^1.50.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.0",
+    "typescript": "^5.6.3"
+  }
+}

@@ -40,6 +40,7 @@ GIF gerado pela própria aplicação no botão **EXPORT GIF** — diagrama Login
   - [8. Badges de Notificação iOS-style](#8-badges-de-notificação-ios-style)
 - [Deploy no Cloudflare Pages](#deploy-no-cloudflare-pages)
 - [Plugin Obsidian](#plugin-obsidian)
+- [CLI (`.mmd` → `.gif` / `.mp4`)](#cli-mmd--gif--mp4)
 - [Setup e Desenvolvimento](#setup-e-desenvolvimento)
 - [Sintaxe Mermaid Suportada](#sintaxe-mermaid-suportada)
 - [Como Contribuir](#como-contribuir)
@@ -330,6 +331,29 @@ Depois fazer push da primeira tag (a [GitHub Action](plugin/.github/workflows/re
 
 ---
 
+## CLI (`.mmd` → `.gif` / `.mp4`)
+
+Precisa renderizar um `.mmd` como `.gif` ou `.mp4` direto do terminal? A pasta [`cli/`](cli/) tem uma CLI em Node que automatiza o web app via Chromium headless e passa os frames pelo `ffmpeg`.
+
+```bash
+# Setup único
+npm run build              # builda o web app que a CLI controla
+cd cli
+npm install
+npx playwright install chromium
+npm run build
+
+# Gere uma animação
+./dist/index.js examples/login-flow.mmd -o login.gif --duration 6 --fps 15
+./dist/index.js examples/login-flow.mmd -o login.mp4 --duration 8 --type alternate
+```
+
+Reaproveita 100% da lógica de renderização do web app (parser, layout dagre, engine de partículas, estilo de cano). Configurável via flags para tipo, velocidade, duração, FPS, dimensões, scale, exibição de badges e mais. Encoding de GIF em 2 passes com `palettegen` para cores nítidas; `libx264 + yuv420p + faststart` para MP4 compatível com qualquer player.
+
+Documentação completa, exemplos e troubleshooting em [cli/README.md](cli/README.md).
+
+---
+
 ## Setup e Desenvolvimento
 
 ### Pré-requisitos
@@ -531,7 +555,7 @@ Ideias e melhorias planejadas — sinta-se livre para escolher uma e abrir um PR
 - [ ] **Embed mode** — iframe minimalista para incluir diagramas animados em outras páginas
 - [ ] **GitHub Action** que renderiza um diagrama do README como GIF animado e faz commit automaticamente
 - [ ] **Plugin VSCode** que abre o visualizador a partir de blocos `mermaid` em arquivos `.md`
-- [ ] **CLI** que recebe arquivo `.mmd` e gera animação como `.mp4` ou GIF
+- [x] ~~**CLI** que recebe arquivo `.mmd` e gera animação como `.mp4` ou GIF~~ ← feito, ver [cli/](cli/)
 
 ### 📱 Mobile / Responsive
 
