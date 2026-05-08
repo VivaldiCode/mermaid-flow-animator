@@ -1,6 +1,6 @@
 {
   "name": "mermaid-flow-animator",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Render Mermaid flowcharts as live animated diagrams inside Obsidian — particles flow through pipe-styled edges to visualize success/error paths.",
   "main": "main.js",
   "private": true,

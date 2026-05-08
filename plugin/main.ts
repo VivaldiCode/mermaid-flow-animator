@@ -9,7 +9,6 @@ export default class MermaidFlowPlugin extends Plugin {
       const wrapper = el.createDiv({ cls: 'mermaid-flow-wrapper' });
       const animator = new FlowAnimator(wrapper, {
         source,
-        speedMultiplier: 1,
         autoSpawn: true,
       });
       ctx.addChild(animator);

@@ -23,12 +23,70 @@ const PIPE_OUTER_WIDTH = 18;
 const PIPE_INNER_WIDTH = 12;
 const PIPE_CORE_WIDTH = 8;
 const PIPE_CENTER_WIDTH = 1.4;
-const AUTO_SPAWN_INTERVAL_MS = 2200;
 const REVISIT_LIMIT = 3;
+
+type FlowSpawnType = 'success' | 'error' | 'alternate';
+
+interface FlowConfig {
+  type: FlowSpawnType;
+  speed: number;
+  interval: number;
+  spawn: number;
+  controls: boolean;
+}
+
+const DEFAULT_CONFIG: FlowConfig = {
+  type: 'alternate',
+  speed: 1,
+  interval: 2200,
+  spawn: 1,
+  controls: true,
+};
+
+function parseFlowConfig(source: string): FlowConfig {
+  const config: FlowConfig = { ...DEFAULT_CONFIG };
+
+  for (const line of source.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith('%%')) continue;
+    const stripped = trimmed.replace(/^%%+/, '').trim();
+    const match = stripped.match(
+      /^(type|speed|interval|spawn|controls)\s*[:=]\s*(.+?)\s*$/i,
+    );
+    if (!match) continue;
+
+    const key = match[1].toLowerCase();
+    const rawValue = match[2].replace(/^["']|["']$/g, '').trim();
+
+    if (key === 'type') {
+      const v = rawValue.toLowerCase();
+      if (v === 'success' || v === 'error' || v === 'alternate') {
+        config.type = v;
+      }
+    } else if (key === 'speed') {
+      const num = parseFloat(rawValue.replace(/x$/i, ''));
+      if (!Number.isNaN(num) && num > 0 && num <= 10) config.speed = num;
+    } else if (key === 'interval') {
+      const num = parseInt(rawValue, 10);
+      if (!Number.isNaN(num) && num >= 200 && num <= 10000) config.interval = num;
+    } else if (key === 'spawn') {
+      const num = parseInt(rawValue, 10);
+      if (!Number.isNaN(num) && num >= 1 && num <= 10) config.spawn = num;
+    } else if (key === 'controls') {
+      const v = rawValue.toLowerCase();
+      if (v === 'false' || v === 'off' || v === 'hide' || v === 'no') {
+        config.controls = false;
+      } else if (v === 'true' || v === 'on' || v === 'show' || v === 'yes') {
+        config.controls = true;
+      }
+    }
+  }
+
+  return config;
+}
 
 interface FlowAnimatorOptions {
   source: string;
-  speedMultiplier?: number;
   autoSpawn?: boolean;
 }
 
@@ -41,14 +99,16 @@ export class FlowAnimator extends MarkdownRenderChild {
   private autoSpawnTimer: number | null = null;
   private alternateCounter = 0;
   private lastTime = 0;
-  private speedMultiplier: number;
   private autoSpawn: boolean;
   private source: string;
+  private config: FlowConfig;
+  private isPaused = false;
+  private playPauseBtn: HTMLButtonElement | null = null;
 
   constructor(containerEl: HTMLElement, options: FlowAnimatorOptions) {
     super(containerEl);
     this.source = options.source;
-    this.speedMultiplier = options.speedMultiplier ?? 1;
+    this.config = parseFlowConfig(this.source);
     this.autoSpawn = options.autoSpawn ?? true;
   }
 
@@ -78,6 +138,7 @@ export class FlowAnimator extends MarkdownRenderChild {
     }
 
     this.renderStaticSvg();
+    if (this.config.controls) this.renderControls();
     this.startLoop();
     if (this.autoSpawn) this.startAutoSpawn();
   }
@@ -382,6 +443,8 @@ export class FlowAnimator extends MarkdownRenderChild {
   }
 
   private resolveSpawnKind(): ParticleKind {
+    if (this.config.type === 'success') return 'success';
+    if (this.config.type === 'error') return 'error';
     const kind: ParticleKind = this.alternateCounter % 2 === 0 ? 'success' : 'error';
     this.alternateCounter += 1;
     return kind;
@@ -397,7 +460,7 @@ export class FlowAnimator extends MarkdownRenderChild {
     this.particles.push(
       createParticle({
         edge: chosen,
-        speedMultiplier: this.speedMultiplier,
+        speedMultiplier: this.config.speed,
         kind,
         flowId: createFlowId(),
         visitedNodes: [chosen.source],
@@ -412,22 +475,62 @@ export class FlowAnimator extends MarkdownRenderChild {
     if (startNodes.length === 0) return;
 
     const dispatch = () => {
-      for (const node of startNodes) this.spawnFromNode(node.id);
+      if (this.isPaused) return;
+      for (let i = 0; i < this.config.spawn; i++) {
+        for (const node of startNodes) this.spawnFromNode(node.id);
+      }
     };
     dispatch();
-    this.autoSpawnTimer = window.setInterval(dispatch, AUTO_SPAWN_INTERVAL_MS);
+    this.autoSpawnTimer = window.setInterval(dispatch, this.config.interval);
   }
 
   private startLoop(): void {
     this.lastTime = performance.now();
     const tick = (now: number) => {
-      const dt = Math.min((now - this.lastTime) / 1000, 0.1);
+      if (!this.isPaused) {
+        const dt = Math.min((now - this.lastTime) / 1000, 0.1);
+        this.advanceParticles(dt);
+        this.renderParticles();
+      }
       this.lastTime = now;
-      this.advanceParticles(dt);
-      this.renderParticles();
       this.rafId = requestAnimationFrame(tick);
     };
     this.rafId = requestAnimationFrame(tick);
+  }
+
+  private renderControls(): void {
+    const bar = document.createElement('div');
+    bar.classList.add('mermaid-flow-controls');
+
+    const btn = document.createElement('button');
+    btn.classList.add('mermaid-flow-btn');
+    btn.setAttribute('type', 'button');
+    btn.setAttribute('aria-label', 'Pause animation');
+    btn.textContent = '⏸';
+    btn.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      this.togglePause();
+    });
+
+    bar.appendChild(btn);
+    this.containerEl.appendChild(bar);
+    this.playPauseBtn = btn;
+  }
+
+  private togglePause(): void {
+    this.isPaused = !this.isPaused;
+    if (this.playPauseBtn) {
+      this.playPauseBtn.textContent = this.isPaused ? '▸' : '⏸';
+      this.playPauseBtn.setAttribute(
+        'aria-label',
+        this.isPaused ? 'Play animation' : 'Pause animation',
+      );
+      this.playPauseBtn.classList.toggle('mermaid-flow-btn--paused', this.isPaused);
+    }
+    if (!this.isPaused) {
+      this.lastTime = performance.now();
+    }
   }
 
   private advanceParticles(dt: number): void {
@@ -484,7 +587,7 @@ export class FlowAnimator extends MarkdownRenderChild {
         currentY: pointY,
         trailPoints: newTrail,
         completed: newProgress >= 1,
-        speed: BASE_EDGES_PER_SECOND * this.speedMultiplier,
+        speed: BASE_EDGES_PER_SECOND * this.config.speed,
       };
 
       if (newProgress >= 1) {
@@ -505,7 +608,7 @@ export class FlowAnimator extends MarkdownRenderChild {
               toSpawn.push(
                 createParticle({
                   edge: chosen,
-                  speedMultiplier: this.speedMultiplier,
+                  speedMultiplier: this.config.speed,
                   kind,
                   flowId: particle.flowId,
                   visitedNodes: [...particle.visitedNodes, particle.targetNodeId],

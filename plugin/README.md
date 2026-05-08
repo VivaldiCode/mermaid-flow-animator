@@ -32,6 +32,66 @@ O bloco vira um diagrama interativo:
 - Loops detectados via revisita por nó (limite 3 visitas)
 - **Clique em qualquer nó** para disparar uma partícula manual a partir dali
 
+### Configuração via comentários `%%`
+
+Customize o comportamento da animação adicionando **comentários `%%` no topo do bloco**. São idiomáticos do Mermaid (não quebram o parse) e aceitam pares `chave: valor` ou `chave=valor`:
+
+````markdown
+```mermaid-flow
+%% type: success
+%% speed: 2
+%% interval: 1000
+%% spawn: 2
+flowchart TD
+    A([Start]) --> B[Process]
+    B --> C{OK?}
+    C -->|Yes| D[Done]
+    C -->|No| E[Error]
+```
+````
+
+| Chave | Valores aceitos | Default | O que faz |
+|---|---|---|---|
+| `type` | `success` &#124; `error` &#124; `alternate` | `alternate` | Que tipo de partícula spawnar nos nós iniciais. `success` (verde) só sucesso, `error` (vermelho) só erro, `alternate` intercala. |
+| `speed` | `0.1` – `10` (aceita sufixo `x`) | `1` | Multiplicador de velocidade. `1` = 1 aresta por segundo. `2` ou `2x` = duas vezes mais rápido. `0.5` = câmera lenta. |
+| `interval` | `200` – `10000` (ms) | `2200` | Tempo entre spawns automáticos nos nós iniciais. Menor = mais partículas no canvas. |
+| `spawn` | `1` – `10` | `1` | Quantas partículas dispara em cada batch (a cada `interval` ms). |
+| `controls` | `true` &#124; `false` &#124; `show` &#124; `hide` | `true` | Mostra/esconde o botão de play/pause no canto superior direito. Útil para gravar GIFs limpos. |
+
+Exemplos práticos:
+
+```mermaid-flow
+%% Só sucessos, rápido, dois por vez
+%% type: success
+%% speed: 2x
+%% interval: 800
+%% spawn: 2
+```
+
+```mermaid-flow
+%% Modo "estresse" — 3 partículas a cada 500ms
+%% interval: 500
+%% spawn: 3
+```
+
+```mermaid-flow
+%% Demo limpo para gravar (sem controles, devagar)
+%% controls: hide
+%% speed: 0.5
+%% interval: 4000
+```
+
+### Botão Play / Pause
+
+No canto superior direito de cada diagrama aparece um botão `⏸` (pause) / `▸` (play). Click pausa **toda** a animação — partículas congelam onde estão, novos spawns ficam suspensos. Clicar de novo retoma sem saltos (o `dt` é resetado pra evitar avanços bruscos).
+
+Útil para:
+- Examinar o estado num momento específico do fluxo
+- Capturar screenshots
+- Pausar enquanto explica para alguém
+
+Para esconder o botão (ex: gravando GIF da nota), use `%% controls: hide` no bloco.
+
 ### Sintaxe Mermaid suportada
 
 | Elemento | Sintaxe |
