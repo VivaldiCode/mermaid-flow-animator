@@ -1,14 +1,16 @@
 # MermaidFlow Animator — Obsidian Plugin
 
-Renderiza flowcharts Mermaid como diagramas **animados** dentro do Obsidian. Partículas verdes (sucesso) e vermelhas (erro) percorrem canos visualizando os caminhos do fluxo, ajudando a explicar processos, requisições, máquinas de estado e qualquer pipeline que tenha decisões.
+> 🌐 **Languages:** **English** · [Português](README.pt-BR.md)
 
-> Companion da web app: [mermaid-flow-animator.pages.dev](https://mermaid-flow-animator.pages.dev/)
+Render Mermaid flowcharts as **live animated diagrams** inside Obsidian. Green (success) and red (error) particles flow through pipe-styled edges, helping you explain processes, requests, state machines, and any pipeline that has decisions.
+
+> Companion to the web app: [mermaid-flow-animator.pages.dev](https://mermaid-flow-animator.pages.dev/)
 
 ---
 
-## Como usar
+## Usage
 
-Em qualquer nota, use um bloco de código com a linguagem `mermaid-flow`:
+In any note, use a fenced code block with language `mermaid-flow`:
 
 ````markdown
 ```mermaid-flow
@@ -22,19 +24,19 @@ flowchart TD
 ```
 ````
 
-O bloco vira um diagrama interativo:
+The block becomes an interactive diagram:
 
-- Layout automático via dagre
-- Arestas em estilo cano (4 camadas com glow)
-- Auto-spawn de partículas a cada ~2s nos nós iniciais
-- Tipo alternado a cada spawn (sucesso, erro, sucesso…)
-- Em IFs subsequentes, a partícula sorteia 50/50 — explora ambos os ramos ao longo do tempo
-- Loops detectados via revisita por nó (limite 3 visitas)
-- **Clique em qualquer nó** para disparar uma partícula manual a partir dali
+- Automatic layout via dagre
+- Pipe-style edges (4 layers with glow)
+- Auto-spawn of particles every ~2s at start nodes
+- Alternating type per spawn (success, error, success…)
+- After the first decision node, particles randomly pick 50/50 — over time they explore both branches
+- Loops detected via per-node revisit count (limit: 3 visits)
+- **Click any node** to dispatch a manual particle from there
 
-### Configuração via comentários `%%`
+### Configuration via `%%` comments
 
-Customize o comportamento da animação adicionando **comentários `%%` no topo do bloco**. São idiomáticos do Mermaid (não quebram o parse) e aceitam pares `chave: valor` ou `chave=valor`:
+Customize animation behavior by adding **`%%` comments at the top of the block**. They are idiomatic Mermaid (won't break the parse) and accept either `key: value` or `key=value` pairs:
 
 ````markdown
 ```mermaid-flow
@@ -50,18 +52,18 @@ flowchart TD
 ```
 ````
 
-| Chave | Valores aceitos | Default | O que faz |
+| Key | Accepted values | Default | What it does |
 |---|---|---|---|
-| `type` | `success` &#124; `error` &#124; `alternate` | `alternate` | Que tipo de partícula spawnar nos nós iniciais. `success` (verde) só sucesso, `error` (vermelho) só erro, `alternate` intercala. |
-| `speed` | `0.1` – `10` (aceita sufixo `x`) | `1` | Multiplicador de velocidade. `1` = 1 aresta por segundo. `2` ou `2x` = duas vezes mais rápido. `0.5` = câmera lenta. |
-| `interval` | `200` – `10000` (ms) | `2200` | Tempo entre spawns automáticos nos nós iniciais. Menor = mais partículas no canvas. |
-| `spawn` | `1` – `10` | `1` | Quantas partículas dispara em cada batch (a cada `interval` ms). |
-| `controls` | `true` &#124; `false` &#124; `show` &#124; `hide` | `true` | Mostra/esconde o botão de play/pause no canto superior direito. Útil para gravar GIFs limpos. |
+| `type` | `success` &#124; `error` &#124; `alternate` | `alternate` | Which kind of particle to spawn at start nodes. `success` (green) only success, `error` (red) only error, `alternate` interleaves them. |
+| `speed` | `0.1` – `10` (with optional `x` suffix) | `1` | Speed multiplier. `1` = 1 edge per second. `2` or `2x` = twice as fast. `0.5` = slow motion. |
+| `interval` | `200` – `10000` (ms) | `2200` | Time between auto-spawn batches at start nodes. Lower = more particles on screen. |
+| `spawn` | `1` – `10` | `1` | How many particles each batch dispatches (every `interval` ms). |
+| `controls` | `true` &#124; `false` &#124; `show` &#124; `hide` | `true` | Show/hide the play-pause button in the top-left corner. Useful for clean GIF recordings. |
 
-Exemplos práticos:
+Practical examples:
 
 ```mermaid-flow
-%% Só sucessos, rápido, dois por vez
+%% Success-only, fast, two at a time
 %% type: success
 %% speed: 2x
 %% interval: 800
@@ -69,129 +71,129 @@ Exemplos práticos:
 ```
 
 ```mermaid-flow
-%% Modo "estresse" — 3 partículas a cada 500ms
+%% "Stress test" mode — 3 particles every 500ms
 %% interval: 500
 %% spawn: 3
 ```
 
 ```mermaid-flow
-%% Demo limpo para gravar (sem controles, devagar)
+%% Clean recording demo (no controls, slow speed)
 %% controls: hide
 %% speed: 0.5
 %% interval: 4000
 ```
 
-### Botão Play / Pause
+### Play / Pause button
 
-No canto superior direito de cada diagrama aparece um botão `⏸` (pause) / `▸` (play). Click pausa **toda** a animação — partículas congelam onde estão, novos spawns ficam suspensos. Clicar de novo retoma sem saltos (o `dt` é resetado pra evitar avanços bruscos).
+A `⏸` (pause) / `▸` (play) button appears in the **top-left corner** of every diagram. Clicking it pauses **the entire** animation — particles freeze in place, new spawns are suspended. Clicking again resumes seamlessly (the `dt` is reset to avoid sudden jumps).
 
-Útil para:
-- Examinar o estado num momento específico do fluxo
-- Capturar screenshots
-- Pausar enquanto explica para alguém
+Useful for:
+- Inspecting state at a specific point in the flow
+- Capturing screenshots
+- Pausing while you explain to someone
 
-Para esconder o botão (ex: gravando GIF da nota), use `%% controls: hide` no bloco.
+To hide the button (e.g. while recording a GIF of the note), use `%% controls: hide` in the block.
 
-### Sintaxe Mermaid suportada
+### Supported Mermaid syntax
 
-| Elemento | Sintaxe |
+| Element | Syntax |
 |---|---|
-| Direção | `flowchart TD` (TB / BT / LR / RL) |
-| Retângulo | `A[Label]` |
-| Estádio | `A([Label])` |
-| Diamante (decisão) | `A{Label}` |
-| Círculo | `A((Label))` |
-| Subrotina | `A[[Label]]` |
-| Aresta | `A --> B` |
-| Aresta com label | `A -->|Yes| B` |
-| Aresta encadeada | `A --> B --> C` |
-| Comentário | `%% texto` (linha própria) |
+| Direction | `flowchart TD` (TB / BT / LR / RL) |
+| Rectangle | `A[Label]` |
+| Stadium | `A([Label])` |
+| Diamond (decision) | `A{Label}` |
+| Circle | `A((Label))` |
+| Subroutine | `A[[Label]]` |
+| Edge | `A --> B` |
+| Edge with label | `A -->|Yes| B` |
+| Chained edge | `A --> B --> C` |
+| Comment | `%% text` (own line) |
 
-**Não suportado** (ainda): subgraphs, classes/styles, links externos, gráficos não-flowchart (sequence, gantt, pie, etc.).
+**Not supported (yet):** subgraphs, classes/styles, click-handlers, non-flowchart Mermaid graphs (sequence, gantt, pie, etc.).
 
 ---
 
-## Instalação
+## Installation
 
-### Via Community Plugins (após aprovação)
+### Via Community Plugins (after approval)
 
-1. Configurações → Community plugins → Browse
-2. Pesquise por **MermaidFlow Animator**
+1. Settings → Community plugins → Browse
+2. Search for **MermaidFlow Animator**
 3. Install → Enable
 
-### Manual (BRAT ou cópia direta)
+### Manual install (BRAT or direct copy)
 
-Para testar antes da aprovação:
+To try it before official approval:
 
-1. Em qualquer release deste repositório, baixe os 3 arquivos:
+1. From any release in this repository, download the 3 files:
    - `main.js`
    - `manifest.json`
    - `styles.css`
-2. Coloque em `<vault>/.obsidian/plugins/mermaid-flow-animator/`
-3. Reabra o Obsidian e ative o plugin em Configurações → Community plugins
+2. Place them in `<vault>/.obsidian/plugins/mermaid-flow-animator/`
+3. Reopen Obsidian and enable the plugin in Settings → Community plugins
 
-Alternativa: use o [BRAT plugin](https://github.com/TfTHacker/obsidian42-brat) e adicione este repositório como beta.
+Alternative: install the [BRAT plugin](https://github.com/TfTHacker/obsidian42-brat) and add this repository as a beta plugin — BRAT keeps it auto-updated.
 
 ---
 
-## Desenvolvimento
+## Development
 
 ```bash
-# Instalar dependências
+# Install dependencies
 npm install
 
-# Build watch (recompila a cada mudança)
+# Build watch (rebuilds on every change)
 npm run dev
 
-# Build de produção (minificado)
+# Production build (minified)
 npm run build
 
 # Type check
 npm run typecheck
 ```
 
-### Iterar dentro do Obsidian
+### Iterating inside Obsidian
 
 ```bash
-# Symlink da pasta para o vault
+# Symlink the plugin folder into your vault
 ln -s "$(pwd)" "<vault>/.obsidian/plugins/mermaid-flow-animator"
 
-# Watch + auto-rebuild
+# Watch mode + auto-rebuild
 npm run dev
 
-# No Obsidian: Cmd+R para reload após mudanças (ou use o plugin "Hot Reload")
+# In Obsidian: Cmd+R to reload after changes (or use the "Hot Reload" plugin)
 ```
 
-### Bumping versão
+### Bumping the version
 
 ```bash
-# Atualiza package.json + manifest.json + versions.json + cria commit
+# Updates package.json + manifest.json + versions.json + creates a commit
 npm version patch    # 0.1.0 → 0.1.1
 npm version minor    # 0.1.0 → 0.2.0
 npm version major    # 0.1.0 → 1.0.0
 
-# Push tag para disparar a release automática
+# Push the tag to trigger the automatic release
 git push origin main --tags
 ```
 
-A action [`.github/workflows/release.yml`](.github/workflows/release.yml) builda e publica os artefatos (`main.js`, `manifest.json`, `styles.css`) automaticamente como assets do GitHub Release.
+The action [`.github/workflows/release.yml`](.github/workflows/release.yml) builds and publishes the artifacts (`main.js`, `manifest.json`, `styles.css`) as binary assets on the GitHub Release.
 
 ---
 
-## Arquitetura
+## Architecture
 
 ```
 plugin/
-├── manifest.json          ← metadata Obsidian
-├── versions.json          ← mapping version → minAppVersion
-├── package.json           ← deps próprias do plugin (sem React/Vite)
+├── manifest.json          ← Obsidian metadata
+├── versions.json          ← version → minAppVersion map
+├── package.json           ← plugin's own deps (no React/Vite)
 ├── tsconfig.json
-├── esbuild.config.mjs     ← bundle CommonJS
-├── version-bump.mjs       ← hook de npm version
-├── main.ts                ← Plugin entry; registra processador "mermaid-flow"
+├── esbuild.config.mjs     ← CommonJS bundle
+├── version-bump.mjs       ← npm version hook
+├── main.ts                ← Plugin entry; registers the "mermaid-flow" processor
 ├── renderer.ts            ← FlowAnimator (extends MarkdownRenderChild)
-├── styles.css             ← estilos aplicados a `.mermaid-flow-*`
-├── shared/                ← utilities core (sincronizadas com a web app)
+├── styles.css             ← styles applied to `.mermaid-flow-*`
+├── shared/                ← core utilities (synced with the web app)
 │   ├── types/graph.ts
 │   └── utils/
 │       ├── mermaidParser.ts
@@ -202,38 +204,38 @@ plugin/
 ├── .github/workflows/
 │   └── release.yml        ← auto release on tag push
 ├── LICENSE                ← MIT
-└── README.md              ← este arquivo
+└── README.md              ← this file
 ```
 
-`FlowAnimator` herda de `MarkdownRenderChild` (lifecycle do Obsidian):
+`FlowAnimator` extends `MarkdownRenderChild` (Obsidian lifecycle):
 
-1. **`onload()`** — parseia source com regex linha-a-linha → aplica `applyDagreLayout` (dagre puro) → monta o `<svg>` estático com defs (markers de seta + filtro de glow), edges (4 camadas de cano), nodes (5 shapes) e particles-layer → inicia rAF loop e timer de auto-spawn.
-2. **`advanceParticles(dt)`** — para cada partícula: avança progress proporcional a `dt`, calcula posição via `path.getPointAtLength()`, gerencia trail de 6 pontos. Quando completa uma aresta, decide o `kind` da próxima (mantém kind, inverte se loop, ou randomiza após o primeiro IF) e spawna nova partícula via `pickEdgeForKind` do core.
-3. **`renderParticles()`** — limpa e re-cria os círculos SVG (trail + halo + core + highlight) a cada frame.
-4. **`onunload()`** — cancela rAF + interval, limpa refs. Obsidian chama isso ao trocar de nota / desabilitar o plugin.
+1. **`onload()`** — regex-parses the source line by line → applies `applyDagreLayout` (pure dagre) → mounts the static `<svg>` with defs (arrow markers + glow filter), edges (4-layer pipe), nodes (5 shapes) and a particles layer → starts the rAF loop and the auto-spawn timer.
+2. **`advanceParticles(dt)`** — for each particle: advances progress proportional to `dt`, computes position via `path.getPointAtLength()`, manages a 6-point trail. When an edge completes, it decides the next `kind` (keep, flip on revisit, or randomize after the first decision) and spawns a new particle via `pickEdgeForKind` from the core.
+3. **`renderParticles()`** — clears and re-creates the SVG circles (trail + halo + core + highlight) every frame.
+4. **`onunload()`** — cancels rAF + interval, clears refs. Obsidian calls this when switching notes or disabling the plugin.
 
-Sem React, sem virtual DOM. ~103 KB minificado (dagre é ~80 KB).
+No React, no virtual DOM. ~105 KB minified (dagre accounts for ~80 KB).
 
 ---
 
-## Submissão à Obsidian Community Plugins
+## Submission to the Obsidian Community Plugins listing
 
-Para o mantenedor — caminho oficial de aprovação:
+For maintainers — official approval path:
 
-1. **Crie um repositório dedicado no GitHub** — esse plugin vive em [VivaldiCode/mermaid-flow-animator-obsidian](https://github.com/VivaldiCode/mermaid-flow-animator-obsidian).
-2. **Extraia** a pasta `plugin/` para a raiz desse repo via git subtree:
+1. **Create a dedicated GitHub repo** — this plugin lives in [VivaldiCode/mermaid-flow-animator-obsidian](https://github.com/VivaldiCode/mermaid-flow-animator-obsidian).
+2. **Extract** the `plugin/` folder from the monorepo to the root of that repo via `git subtree`:
    ```bash
-   # A partir do mermaid-Visualizer (web app)
+   # From the mermaid-Visualizer monorepo (web app)
    git subtree split --prefix plugin -b plugin-only
    git push https://github.com/VivaldiCode/mermaid-flow-animator-obsidian.git plugin-only:main
    ```
-3. **Faça push da primeira release** com tag `0.1.0` — a action automática vai gerar os assets:
+3. **Push the first release tag** — the GitHub Action will build and create the release with the assets:
    ```bash
    git tag 0.1.0
    git push --tags
    ```
-4. **Verifique** que o release tem `main.js`, `manifest.json` e `styles.css` como assets binários
-5. **Abra um PR** em [obsidianmd/obsidian-releases](https://github.com/obsidianmd/obsidian-releases) adicionando uma entrada ao final de [`community-plugins.json`](https://github.com/obsidianmd/obsidian-releases/blob/master/community-plugins.json):
+4. **Verify** the release has `main.js`, `manifest.json`, and `styles.css` attached as binary assets.
+5. **Open a PR** at [obsidianmd/obsidian-releases](https://github.com/obsidianmd/obsidian-releases) appending an entry to [`community-plugins.json`](https://github.com/obsidianmd/obsidian-releases/blob/master/community-plugins.json):
    ```json
    {
      "id": "mermaid-flow-animator",
@@ -243,30 +245,30 @@ Para o mantenedor — caminho oficial de aprovação:
      "repo": "VivaldiCode/mermaid-flow-animator-obsidian"
    }
    ```
-6. **Aguarde a review** dos mantenedores oficiais (geralmente 1-4 semanas). Eles vão checar:
-   - O plugin atende às [diretrizes para devs](https://docs.obsidian.md/Developer+policies)
-   - Não usa APIs privadas
-   - Tem `manifest.json` válido com `id` único
-   - Funciona conforme descrito
-7. **Após merge**, o plugin aparece automaticamente na aba Community plugins do Obsidian de qualquer usuário
+6. **Wait for review** by the official maintainers (typically 1–4 weeks). They will check:
+   - The plugin follows the [developer policies](https://docs.obsidian.md/Developer+policies)
+   - It does not use private APIs
+   - It has a valid `manifest.json` with a unique `id`
+   - It works as described
+7. **After the merge**, the plugin shows up automatically in the Community plugins tab inside Obsidian for any user.
 
-Documentação oficial: [Submit your plugin](https://docs.obsidian.md/Plugins/Releasing/Submit+your+plugin).
+Official documentation: [Submit your plugin](https://docs.obsidian.md/Plugins/Releasing/Submit+your+plugin).
 
 ---
 
-## Sincronização com a web app
+## Syncing with the web app
 
-Os arquivos em `shared/` são **cópias** dos correspondentes em `../src/` da web app. Se você atualizar a parser/layout/cores na web app, copie para cá:
+The files under `shared/` are **copies** of the corresponding files in `../src/` of the web app. When you update the parser, layout, or color scheme in the web app, copy them over:
 
 ```bash
 cp ../src/types/graph.ts shared/types/graph.ts
 cp ../src/utils/{mermaidParser,applyDagreLayout,colorScheme,particleFactory,pathCalculator}.ts shared/utils/
 ```
 
-A duplicação é proposital — quando o plugin for extraído para repo próprio, ele continua funcionando sem dependência da web app.
+The duplication is intentional — when the plugin is extracted to its own repository, it still works without depending on the web app's source tree.
 
 ---
 
-## Licença
+## License
 
-MIT — veja [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE).
