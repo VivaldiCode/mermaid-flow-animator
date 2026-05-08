@@ -1,0 +1,56 @@
+.mermaid-flow-wrapper {
+  width: 100%;
+  margin: 8px 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: #0a0e1a;
+  background-image: radial-gradient(circle, #1e293b 1px, transparent 1px);
+  background-size: 20px 20px;
+  border: 1px solid #1e293b;
+}
+
+.mermaid-flow-host {
+  display: block;
+  width: 100%;
+}
+
+.mermaid-flow-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 720px;
+  shape-rendering: geometricPrecision;
+  text-rendering: geometricPrecision;
+}
+
+.mfa-edge {
+  pointer-events: none;
+}
+
+.mfa-node {
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+
+.mfa-node:hover rect,
+.mfa-node:hover polygon,
+.mfa-node:hover ellipse {
+  filter: drop-shadow(0 0 10px rgba(96, 165, 250, 0.5));
+}
+
+.mfa-node text {
+  font-family: 'JetBrains Mono', 'Menlo', 'Consolas', monospace;
+  font-size: 13px;
+}
+
+.mermaid-flow-error {
+  padding: 12px 14px;
+  border-left: 3px solid #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+  color: #fecaca;
+  font-family: var(--font-monospace, monospace);
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 4px;
+  margin: 8px 0;
+}

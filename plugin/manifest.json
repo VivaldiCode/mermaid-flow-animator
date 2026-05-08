@@ -1,0 +1,10 @@
+{
+  "id": "mermaid-flow-animator",
+  "name": "MermaidFlow Animator",
+  "version": "0.1.0",
+  "minAppVersion": "1.4.0",
+  "description": "Render Mermaid flowcharts as live, animated diagrams inside notes — particles flow through pipe-styled edges to visualize success/error paths.",
+  "author": "VivaldiCode",
+  "authorUrl": "https://github.com/VivaldiCode/mermaid-flow-animator",
+  "isDesktopOnly": false
+}

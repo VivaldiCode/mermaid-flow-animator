@@ -37,6 +37,7 @@ GIF gerado pela própria aplicação no botão **EXPORT GIF** — diagrama Login
   - [7. Modos de Visualização (Overview / Follow)](#7-modos-de-visualização-overview--follow)
   - [8. Badges de Notificação iOS-style](#8-badges-de-notificação-ios-style)
 - [Deploy no Cloudflare Pages](#deploy-no-cloudflare-pages)
+- [Plugin Obsidian](#plugin-obsidian)
 - [Setup e Desenvolvimento](#setup-e-desenvolvimento)
 - [Sintaxe Mermaid Suportada](#sintaxe-mermaid-suportada)
 - [Como Contribuir](#como-contribuir)
@@ -294,6 +295,36 @@ Vite copia tudo de `public/` para `dist/` no build, então esses arquivos são a
 - **404 ao dar refresh em qualquer rota** → confira se o `public/_redirects` foi copiado para `dist/` (deve aparecer no log de build do Cloudflare como arquivo enviado).
 - **Build falha por `Cannot find module 'gif.js'`** → garanta que `npm install` rode antes do build. O Cloudflare faz isso automaticamente via `npm clean-install`, mas se você tem um `package-lock.json` desatualizado, regere com `npm install`.
 - **Assets carregam mas a app fica branca** → abra o DevTools, aba Console. Provavelmente um erro de JavaScript específico. O bundle vai versionado (hash no nome do arquivo), então cache antigo do browser não causa esse problema.
+
+---
+
+## Plugin Obsidian
+
+Existe também um **plugin oficial para o [Obsidian](https://obsidian.md/)** que renderiza diagramas animados inline em suas notas. Mesmo motor (parser, layout, partículas), mas sem React — bundle de ~103 KB com renderização DOM/SVG imperativa via `MarkdownRenderChild`.
+
+### Uso dentro do Obsidian
+
+````markdown
+```mermaid-flow
+flowchart TD
+    A([Start]) --> B{Valid?}
+    B -->|Yes| C[Done]
+    B -->|No| A
+```
+````
+
+Tudo configurado em [`plugin/`](plugin/) — pasta self-contained com `manifest.json`, `package.json`, GitHub Actions de release e cópia das utilities core. Veja [plugin/README.md](plugin/README.md) para instalação manual e instruções de submissão à Community Plugins do Obsidian.
+
+### Publicação
+
+Para publicar na lista oficial da comunidade Obsidian, o plugin deve viver em **repo dedicado**. O caminho recomendado é extrair `plugin/` para um repositório próprio:
+
+```bash
+git subtree split --prefix plugin -b plugin-only
+git push <novo-repo-url> plugin-only:main
+```
+
+Depois fazer push da primeira tag (a [GitHub Action](plugin/.github/workflows/release.yml) builda e cria o release com os assets), e abrir um PR em [obsidianmd/obsidian-releases](https://github.com/obsidianmd/obsidian-releases) com a entrada do plugin. Detalhes completos em [plugin/README.md](plugin/README.md#submissão-à-obsidian-community-plugins).
 
 ---
 
