@@ -2,9 +2,35 @@
 
 Render Mermaid flowcharts as **animated GIF or MP4** from the command line. Reuses 100% of the web app — same parser, layout, particle engine, and pipe rendering — automated via headless Chromium.
 
-```
+```bash
+npm install -g mermaid-flow-animator-cli
+npx playwright install chromium
+
 mermaid-flow login-flow.mmd -o login-demo.gif --duration 6 --fps 15
 ```
+
+[![npm version](https://img.shields.io/npm/v/mermaid-flow-animator-cli.svg)](https://www.npmjs.com/package/mermaid-flow-animator-cli)
+[![License](https://img.shields.io/npm/l/mermaid-flow-animator-cli.svg)](../LICENSE)
+
+---
+
+## Install
+
+### From npm (once published)
+
+```bash
+# Install globally so the `mermaid-flow` command is on $PATH
+npm install -g mermaid-flow-animator-cli
+
+# Playwright bundles a Chromium download separately — required once
+npx playwright install chromium
+```
+
+The npm package ships the web app's `dist/` already bundled inside (`web-dist/`), so the CLI is fully self-contained — no need to clone the monorepo.
+
+### From source (monorepo dev)
+
+See [main README](../README.md#setup--development) for the full setup. Once the web app is built and CLI deps are installed, the [`bin/mermaid-flow`](../bin/mermaid-flow) wrapper at the repo root can be symlinked into `$PATH`.
 
 ---
 
@@ -22,33 +48,6 @@ mermaid-flow login-flow.mmd -o login-demo.gif --duration 6 --fps 15
 No GPU dependency. Works on CI, on your laptop, on a Mac with HiDPI screen — same output everywhere.
 
 ---
-
-## Install
-
-The CLI lives inside the [mermaid-Visualizer monorepo](../) for now. From the project root:
-
-```bash
-# 1. Install root deps + build the web app once
-npm install
-npm run build
-
-# 2. Install the CLI's own deps (Playwright + ffmpeg-static)
-cd cli
-npm install
-npx playwright install chromium   # ~92 MB Chromium download
-
-# 3. Build the CLI
-npm run build
-```
-
-After this, the CLI binary is at `cli/dist/index.js`. The repo also ships a `bin/mermaid-flow` wrapper that resolves the entry point through any symlink, so you can put it on `$PATH` and call it from anywhere:
-
-```bash
-ln -s "$(pwd -P)/../bin/mermaid-flow" /usr/local/bin/mermaid-flow
-
-# Now from anywhere:
-mermaid-flow examples/login-flow.mmd -o demo.gif
-```
 
 ### Claude / Claude Code skill
 

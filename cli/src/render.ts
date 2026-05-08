@@ -13,9 +13,31 @@ import { encodeWithFfmpeg } from './encode.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// cli/dist/render.js -> cli/dist -> cli -> mermaid-Visualizer
-const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
-const DIST_DIR = path.join(PROJECT_ROOT, 'dist');
+// Two layouts to support:
+//   1. Installed via npm: <package>/dist/render.js + <package>/web-dist/index.html
+//   2. Monorepo dev:      cli/dist/render.js + ../dist/index.html (root)
+async function findWebDistDir(): Promise<string> {
+  const cliPkgRoot = path.resolve(__dirname, '..');
+  const candidates = [
+    path.join(cliPkgRoot, 'web-dist'),
+    path.resolve(cliPkgRoot, '..', 'dist'),
+  ];
+  for (const candidate of candidates) {
+    try {
+      await access(path.join(candidate, 'index.html'));
+      return candidate;
+    } catch {
+      /* keep looking */
+    }
+  }
+  throw new Error(
+    'Web app dist not found. Tried:\n' +
+      candidates.map((c) => `  - ${c}`).join('\n') +
+      '\n\nIf you are running from the monorepo, run "npm run build" at the root.\n' +
+      'If you installed via npm, the package is broken — please report at\n' +
+      '  https://github.com/VivaldiCode/mermaid-flow-animator/issues',
+  );
+}
 
 function log(input: RenderInput, message: string): void {
   if (!input.quiet) process.stdout.write(`${message}\n`);
@@ -27,7 +49,7 @@ export async function run(input: RenderInput): Promise<void> {
     throw new Error(`Output must be .gif or .mp4 (got "${ext}")`);
   }
 
-  await ensureDist();
+  const distDir = await findWebDistDir();
 
   const tmpDir = await mkdtemp(path.join(tmpdir(), 'mfa-cli-'));
   log(input, `→ Temp dir: ${tmpDir}`);
@@ -35,7 +57,7 @@ export async function run(input: RenderInput): Promise<void> {
   const sourcePath = path.join(tmpDir, 'source.mmd');
   await writeFile(sourcePath, input.source, 'utf-8');
 
-  const { server, port } = await startServer();
+  const { server, port } = await startServer(distDir);
   log(input, `→ Local server on port ${port}`);
 
   let browser: Browser | undefined;
@@ -99,20 +121,9 @@ export async function run(input: RenderInput): Promise<void> {
   }
 }
 
-async function ensureDist(): Promise<void> {
-  try {
-    await access(path.join(DIST_DIR, 'index.html'));
-  } catch {
-    throw new Error(
-      `Build artifacts not found at ${DIST_DIR}.\n` +
-        '  Run "npm run build" in the project root first.',
-    );
-  }
-}
-
-async function startServer(): Promise<{ server: Server; port: number }> {
+async function startServer(distDir: string): Promise<{ server: Server; port: number }> {
   const app = express();
-  app.use(express.static(DIST_DIR));
+  app.use(express.static(distDir));
   return new Promise((resolve) => {
     const server = app.listen(0, () => {
       const address = server.address();

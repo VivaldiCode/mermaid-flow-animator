@@ -1,17 +1,49 @@
 {
-  "name": "@mermaid-flow/cli",
+  "name": "mermaid-flow-animator-cli",
   "version": "0.1.0",
-  "description": "Render Mermaid flowcharts as animated GIF or MP4 from the command line.",
+  "description": "Render Mermaid flowcharts as animated GIF or MP4 from the command line — particles flow through pipe-styled edges to visualize success/error paths.",
   "type": "module",
-  "private": true,
-  "bin": {
-    "mermaid-flow": "./dist/index.js"
+  "license": "MIT",
+  "author": "VivaldiCode",
+  "homepage": "https://github.com/VivaldiCode/mermaid-flow-animator#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/VivaldiCode/mermaid-flow-animator.git",
+    "directory": "cli"
   },
+  "bugs": {
+    "url": "https://github.com/VivaldiCode/mermaid-flow-animator/issues"
+  },
+  "keywords": [
+    "mermaid",
+    "flowchart",
+    "diagram",
+    "animation",
+    "gif",
+    "mp4",
+    "cli",
+    "ffmpeg",
+    "playwright",
+    "visualization"
+  ],
+  "main": "dist/index.js",
+  "bin": {
+    "mermaid-flow": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "web-dist",
+    "examples",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "copy-web-dist": "node scripts/copy-web-dist.mjs",
+    "prepublishOnly": "npm run build && npm run copy-web-dist"
   },
   "dependencies": {
     "commander": "^12.1.0",
@@ -23,5 +55,8 @@
     "@types/express": "^5.0.0",
     "@types/node": "^22.10.0",
     "typescript": "^5.6.3"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

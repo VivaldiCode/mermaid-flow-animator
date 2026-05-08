@@ -45,6 +45,7 @@ GIF gerado pela própria aplicação no botão **EXPORT GIF** — diagrama Login
 - [Setup e Desenvolvimento](#setup-e-desenvolvimento)
 - [Sintaxe Mermaid Suportada](#sintaxe-mermaid-suportada)
 - [Como Contribuir](#como-contribuir)
+- [Publicação para uso público](#publicação-para-uso-público)
 - [TODO / Roadmap](#todo--roadmap)
 - [Licença](#licença)
 
@@ -336,9 +337,23 @@ Depois fazer push da primeira tag (a [GitHub Action](plugin/.github/workflows/re
 
 Precisa renderizar um `.mmd` como `.gif` ou `.mp4` direto do terminal? A pasta [`cli/`](cli/) tem uma CLI em Node que automatiza o web app via Chromium headless e passa os frames pelo `ffmpeg`.
 
+### Instalação (após publicação no npm)
+
+```bash
+npm install -g mermaid-flow-animator-cli
+npx playwright install chromium
+
+mermaid-flow fluxo.mmd -o demo.gif
+```
+
+O pacote no npm já vem com os assets do web app embutidos, então não precisa clonar nada.
+
+### Do código fonte (monorepo)
+
 ```bash
 # Setup único
-npm run build              # builda o web app que a CLI controla
+npm install
+npm run build
 cd cli
 npm install
 npx playwright install chromium
@@ -533,6 +548,64 @@ Inclua no issue:
 - O comportamento esperado vs. observado
 - Browser e OS
 - Screenshot ou screen recording se possível
+
+---
+
+## Publicação para uso público
+
+O projeto é estruturado para que cada componente possa ser distribuído de forma independente. Aqui está o status e os passos necessários para cada um:
+
+| Componente | Localização pública | Status | Ação necessária |
+|---|---|---|---|
+| **Web app** | [mermaid-flow-animator.pages.dev](https://mermaid-flow-animator.pages.dev/) | ✅ no ar | nenhuma |
+| **Plugin Obsidian** | [VivaldiCode/mermaid-flow-animator-obsidian](https://github.com/VivaldiCode/mermaid-flow-animator-obsidian) | publicado, releases automatizadas via tag | submeter PR em [obsidianmd/obsidian-releases](https://github.com/obsidianmd/obsidian-releases) — ver [plugin/README.pt-BR.md](plugin/README.pt-BR.md#submissão-à-obsidian-community-plugins) |
+| **CLI** | npm: `mermaid-flow-animator-cli` | configurada, **ainda não publicada** | ver "Publicando a CLI no npm" abaixo |
+| **Skill Claude Code** | `.claude/skills/mermaid-flow/` neste repo | live, instalável via symlink | opcional: empacotar como Claude plugin quando o marketplace oficial chegar |
+
+### Publicando a CLI no npm
+
+A CLI está totalmente configurada para `npm publish` — `mermaid-flow-animator-cli@0.1.0` será self-contained (web app embutido em `web-dist/` via `prepublishOnly`).
+
+**Setup único que o mantenedor precisa fazer:**
+
+1. **Crie uma conta no npm** em [npmjs.com](https://www.npmjs.com/signup) e ative 2FA.
+2. **Confirme que o nome do pacote está disponível** (ou escolha outro):
+   ```bash
+   npm view mermaid-flow-animator-cli
+   # Se "404 Not Found" → nome livre
+   # Senão → edite cli/package.json e mude o name
+   ```
+3. **Crie um automation token** em [npmjs.com/settings/<user>/tokens](https://www.npmjs.com/settings/) (tipo "Automation"). Copie.
+4. **Adicione o token como secret `NPM_TOKEN`** neste repo: GitHub → Settings → Secrets and variables → Actions → New repository secret → name `NPM_TOKEN`, value cole.
+
+**Para publicar a versão 0.1.0 da primeira vez** (manual, requer 2FA):
+
+```bash
+# Da raiz do repo
+npm install
+npm run build              # builda o web app
+cd cli
+npm install
+npm run build
+npm run copy-web-dist      # copia ../dist para web-dist/
+
+npm login                  # autentica local com 2FA
+npm publish --access public
+```
+
+Após o primeiro publish, **releases futuras são automáticas** via [`.github/workflows/cli-release.yml`](.github/workflows/cli-release.yml):
+
+```bash
+# Bump da versão em cli/package.json
+cd cli
+npm version patch          # 0.1.0 → 0.1.1
+
+# Tag com prefixo cli-v e push — o workflow builda + publica
+git tag cli-v0.1.1
+git push origin main --tags
+```
+
+O workflow verifica que a tag bate com `cli/package.json#version`, builda o web app, roda `prepublishOnly` (que copia o `web-dist/`), e publica com `--provenance` para o npm exibir que o build veio deste repo.
 
 ---
 

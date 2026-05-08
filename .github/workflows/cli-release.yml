@@ -1,0 +1,65 @@
+name: Publish CLI to npm
+
+on:
+  push:
+    tags:
+      - 'cli-v*'
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install root deps
+        run: npm ci
+
+      - name: Build the web app (so CLI can bundle it)
+        run: npm run build
+
+      - name: Install CLI deps
+        working-directory: cli
+        run: npm ci
+
+      - name: Sanity-check version tag matches package.json
+        working-directory: cli
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          TAG_VERSION="${GITHUB_REF#refs/tags/cli-v}"
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "✕ Tag cli-v$TAG_VERSION does not match package.json version $PKG_VERSION"
+            exit 1
+          fi
+          echo "✓ Tag cli-v$TAG_VERSION matches package.json"
+
+      - name: Publish to npm
+        working-directory: cli
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub release for the CLI tag
+        uses: softprops/action-gh-release@v2
+        with:
+          name: CLI ${{ github.ref_name }}
+          body: |
+            Published `mermaid-flow-animator-cli@${{ github.ref_name }}` to npm.
+
+            ```bash
+            npm install -g mermaid-flow-animator-cli
+            npx playwright install chromium
+            mermaid-flow flow.mmd -o demo.gif
+            ```
+
+            See [cli/README.md](https://github.com/VivaldiCode/mermaid-flow-animator/blob/main/cli/README.md) for full options and examples.
